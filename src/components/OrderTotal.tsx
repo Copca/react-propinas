@@ -1,23 +1,23 @@
-import { useMemo } from 'react';
+import { Dispatch, useMemo } from 'react';
+
+import type { OrderActions } from '../reducers/orderReducer';
 import type { IOrderItem } from '../types';
+
 import { formatCurrency } from '../helpers';
 
 type OrderTotalProps = {
 	order: IOrderItem[];
 	tip: number;
-	placeOrder: () => void;
+	dispatch: Dispatch<OrderActions>;
 };
 
-export default function OrderTotal({ order, tip, placeOrder }: OrderTotalProps) {
+export default function OrderTotal({ order, tip, dispatch }: OrderTotalProps) {
 	const subtotalAmount = useMemo(
 		() => order.reduce((total, item) => total + item.quantity * item.price, 0),
 		[order]
 	);
 	const tipAmount = useMemo(() => subtotalAmount * tip, [tip, subtotalAmount]);
-	const totalAmount = useMemo(
-		() => subtotalAmount + tipAmount,
-		[tipAmount, subtotalAmount]
-	);
+	const totalAmount = useMemo(() => subtotalAmount + tipAmount, [tipAmount, subtotalAmount]);
 
 	return (
 		<>
@@ -43,7 +43,7 @@ export default function OrderTotal({ order, tip, placeOrder }: OrderTotalProps) 
 			<button
 				className='uppercase text-white font-bold bg-black disabled:opacity-10 w-full p-3 mt-10'
 				disabled={totalAmount === 0}
-				onClick={placeOrder}
+				onClick={() => dispatch({ type: 'place-order' })}
 			>
 				Guardar Orden
 			</button>
